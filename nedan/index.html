@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>販売価格の逆算ツール｜手取り目標からBOOTH・minne・Creema・noteの価格を計算</title>
+<link rel="canonical" href="https://flowercircle0304.github.io/free/nedan/">
+<meta name="description" content="ほしい手取り額を入れると、BOOTH・minne・Creema・note・ココナラ・メルカリでいくらで売ればよいかを逆算する無料ツール。材料費や送料も考慮できます。">
+<style>
+  :root { --bg:#fafaf7; --fg:#1f2328; --muted:#5b6470; --line:#e3e3dc; --accent:#2f6f5e; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16181b; --fg:#e8e8e3; --muted:#a0a7b0; --line:#30343a; --accent:#6cc3a9; --card:#1e2125; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; background:var(--bg); color:var(--fg); line-height:1.7; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.5rem; line-height:1.4; margin:0 0 8px; }
+  h2 { font-size:1.15rem; margin:40px 0 8px; }
+  p.lead { color:var(--muted); margin:0 0 24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  label { display:block; font-weight:600; margin-bottom:4px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > div { flex:1 1 200px; }
+  input[type=number], select { width:100%; font-size:1.1rem; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
+  table { width:100%; border-collapse:collapse; margin-top:16px; font-variant-numeric:tabular-nums; }
+  th, td { padding:10px 8px; border-bottom:1px solid var(--line); text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-size:.85rem; color:var(--muted); font-weight:600; }
+  tr.best td { font-weight:700; }
+  tr.best td:first-child::after { content:" 最多"; font-size:.75rem; color:var(--accent); }
+  .note { font-size:.85rem; color:var(--muted); }
+  .bar { height:6px; background:var(--accent); border-radius:3px; margin-top:4px; }
+  details { margin-top:8px; }
+  footer { margin-top:48px; font-size:.8rem; color:var(--muted); }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>販売価格の逆算ツール</h1>
+  <p class="lead">「1個あたりいくら手元に残したいか」から、各販売サイトでの販売価格を逆算します。材料費などの原価も入れられます。入力内容はどこにも送信されません。</p>
+  <div class="card">
+    <div class="row">
+      <div><label for="want">1個あたりの利益の目標（円）</label><input id="want" type="number" min="0" value="1000" inputmode="numeric"></div>
+      <div><label for="cost">1個あたりの原価（材料費・梱包材など・円）</label><input id="cost" type="number" min="0" value="300" inputmode="numeric"></div>
+    </div>
+    <table aria-live="polite">
+      <thead><tr><th>販売サイト</th><th>必要な販売価格</th><th>手数料</th><th>残る利益</th></tr></thead>
+      <tbody id="out"></tbody>
+    </table>
+    <p class="note">送料は購入者負担で、受け取った送料はそのまま発送に使う前提です（minne・Creema・BOOTHは送料にも手数料がかかるため、その分は利益から少し減ります）。noteはカード払い、メルカリは送料込み価格ではない前提です。</p>
+  </div>
+  <h2>価格を決めるときのポイント</h2>
+  <div class="card note"><ul>
+    <li>手数料は「価格×率」なので、価格を上げると手数料も増えます。逆算すると、単純に「目標＋手数料」より少し高くなります。</li>
+    <li>材料費のほか、制作時間や梱包・発送の手間も含めて利益目標を決めると、続けやすい価格になります。</li>
+    <li>計算した価格は「この金額以上にすれば目標を下回らない」目安です。端数は切り上げて調整してください。</li>
+  </ul></div>
+  <div class="card" style="margin-top:24px;border-color:#2f6f5e">
+    <b>売上と経費の記録を自動で集計したい方へ</b>
+    <p style="margin:6px 0 8px">販売先を選ぶだけで手数料・手取り・月別の利益・確定申告用の集計まで計算できるスプレッドシートを用意しました。まずは無料のお試し版からどうぞ。</p>
+    <a href="https://creator-okane.booth.pm/items/9226824">無料お試し版（BOOTH）</a> ／ <a href="https://creator-okane.booth.pm/items/9226811">製品版 880円（BOOTH）</a>
+  </div>
+
+  
+  <footer>
+    <p>本ツールの数値は公開情報をもとにした目安です。手数料は変更されることがあるため、最新の情報は各公式サイトでご確認ください。税務上の判断は税務署や税理士にご相談ください。</p>
+    <p><a href="../">副業クリエイターのお金の道具箱</a>：<a href="../tesuryo/">手数料・手取り計算機</a> ／ <a href="../nedan/">販売価格の逆算</a> ／ <a href="../anbun/">家事按分計算機</a> ／ <a href="../shinkoku/">申告要否チェッカー</a></p>
+  </footer>
+</main>
+<script>
+const P=[
+ {name:"BOOTH",fee:p=>Math.ceil(p*0.056)+45},
+ {name:"minne",fee:p=>Math.ceil(p*0.10659)},
+ {name:"Creema",fee:p=>Math.ceil(p*0.1067)},
+ {name:"note",fee:p=>{const a=Math.floor(p*0.05);return a+Math.floor((p-a)*0.10)}},
+ {name:"ココナラ",fee:p=>Math.ceil(p*0.22)},
+ {name:"メルカリ",fee:p=>Math.floor(p*0.10)},
+];
+const $=id=>document.getElementById(id), yen=n=>n.toLocaleString("ja-JP")+"円";
+function solve(x,need){let p=Math.max(1,need);while(p-x.fee(p)<need)p++;return p}
+function render(){const w=Math.max(0,Math.floor(+$("want").value||0)),c=Math.max(0,Math.floor(+$("cost").value||0)),need=w+c;
+ $("out").innerHTML=P.map(x=>{const p=solve(x,need),f=x.fee(p);return `<tr><td>${x.name}</td><td><b>${yen(p)}</b></td><td>${yen(f)}</td><td>${yen(p-f-c)}</td></tr>`}).join("")}
+["want","cost"].forEach(i=>$(i).addEventListener("input",render));render();
+</script>
+</body>
+</html>

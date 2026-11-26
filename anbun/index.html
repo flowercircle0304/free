@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家事按分計算機｜家賃・電気代・スマホ代を副業の経費にする割合を計算</title>
+<link rel="canonical" href="https://flowercircle0304.github.io/free/anbun/">
+<meta name="description" content="家賃・電気代・通信費などを副業の経費にするときの家事按分を、面積・時間・使用割合から計算する無料ツール。年間の経費額もまとめて表示します。">
+<style>
+  :root { --bg:#fafaf7; --fg:#1f2328; --muted:#5b6470; --line:#e3e3dc; --accent:#2f6f5e; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16181b; --fg:#e8e8e3; --muted:#a0a7b0; --line:#30343a; --accent:#6cc3a9; --card:#1e2125; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; background:var(--bg); color:var(--fg); line-height:1.7; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.5rem; line-height:1.4; margin:0 0 8px; }
+  h2 { font-size:1.15rem; margin:40px 0 8px; }
+  p.lead { color:var(--muted); margin:0 0 24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  label { display:block; font-weight:600; margin-bottom:4px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > div { flex:1 1 200px; }
+  input[type=number], select { width:100%; font-size:1.1rem; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
+  table { width:100%; border-collapse:collapse; margin-top:16px; font-variant-numeric:tabular-nums; }
+  th, td { padding:10px 8px; border-bottom:1px solid var(--line); text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-size:.85rem; color:var(--muted); font-weight:600; }
+  tr.best td { font-weight:700; }
+  tr.best td:first-child::after { content:""; font-size:.75rem; color:var(--accent); }
+  .note { font-size:.85rem; color:var(--muted); }
+  .bar { height:6px; background:var(--accent); border-radius:3px; margin-top:4px; }
+  details { margin-top:8px; }
+  footer { margin-top:48px; font-size:.8rem; color:var(--muted); }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>家事按分計算機</h1>
+  <p class="lead">自宅で副業をしている人向けに、家賃・電気代・スマホ代などのうち経費にできる額の目安を計算します。入力内容はどこにも送信されません。</p>
+  <div class="card">
+    <h2 style="margin-top:0">1. 割合の基準</h2>
+    <div class="row">
+      <div><label for="area">仕事に使う部屋の面積（㎡）</label><input id="area" type="number" min="0" step="0.1" value="8"></div>
+      <div><label for="total">家全体の面積（㎡）</label><input id="total" type="number" min="0" step="0.1" value="40"></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div><label for="hours">1週間の副業の作業時間（時間）</label><input id="hours" type="number" min="0" value="15"></div>
+      <div><label for="phone">スマホ・ネットを仕事に使う割合（%）</label><input id="phone" type="number" min="0" max="100" value="30"></div>
+    </div>
+    <h2>2. 毎月の支払額（円）</h2>
+    <div class="row">
+      <div><label for="rent">家賃</label><input id="rent" type="number" min="0" value="70000"></div>
+      <div><label for="elec">電気代</label><input id="elec" type="number" min="0" value="8000"></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div><label for="net">インターネット代</label><input id="net" type="number" min="0" value="5000"></div>
+      <div><label for="mob">スマホ代</label><input id="mob" type="number" min="0" value="4000"></div>
+    </div>
+    <table aria-live="polite">
+      <thead><tr><th>費用</th><th>按分の基準</th><th>割合</th><th>年間の経費額</th></tr></thead>
+      <tbody id="out"></tbody>
+    </table>
+  </div>
+  <h2>家事按分の考え方</h2>
+  <div class="card note"><ul>
+    <li>家賃は「仕事に使う部屋の面積÷家全体の面積」で按分するのが一般的です。</li>
+    <li>電気代は、面積の割合に「1週間の作業時間÷168時間（24時間×7日）」の考え方を組み合わせることがあります。このツールでは「面積割合」と「時間割合」の大きい方を上限の目安として表示します。</li>
+    <li>スマホ・インターネットは、仕事で使う時間や用途の割合で按分します。</li>
+    <li>按分の割合は、説明できる合理的な根拠があることが大切です。根拠のメモを残しておきましょう。</li>
+  </ul>
+  <p>参考: <a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2210.htm">国税庁 No.2210 やさしい必要経費の知識</a></p></div>
+  <div class="card" style="margin-top:24px;border-color:#2f6f5e">
+    <b>売上と経費の記録を自動で集計したい方へ</b>
+    <p style="margin:6px 0 8px">販売先を選ぶだけで手数料・手取り・月別の利益・確定申告用の集計まで計算できるスプレッドシートを用意しました。まずは無料のお試し版からどうぞ。</p>
+    <a href="https://creator-okane.booth.pm/items/9226824">無料お試し版（BOOTH）</a> ／ <a href="https://creator-okane.booth.pm/items/9226811">製品版 880円（BOOTH）</a>
+  </div>
+
+  
+  <footer>
+    <p>本ツールの数値は公開情報をもとにした目安です。手数料は変更されることがあるため、最新の情報は各公式サイトでご確認ください。税務上の判断は税務署や税理士にご相談ください。</p>
+    <p><a href="../">副業クリエイターのお金の道具箱</a>：<a href="../tesuryo/">手数料・手取り計算機</a> ／ <a href="../nedan/">販売価格の逆算</a> ／ <a href="../anbun/">家事按分計算機</a> ／ <a href="../shinkoku/">申告要否チェッカー</a></p>
+  </footer>
+</main>
+<script>
+const $=id=>document.getElementById(id), yen=n=>Math.round(n).toLocaleString("ja-JP")+"円", v=id=>Math.max(0,+$(id).value||0);
+function render(){const ar=v("total")?Math.min(1,v("area")/v("total")):0, tr=Math.min(1,v("hours")/168), ph=Math.min(1,v("phone")/100), el=Math.max(ar,tr);
+ const rows=[["家賃","面積",ar,v("rent")],["電気代","面積と時間の大きい方",el,v("elec")],["インターネット代","使用割合",ph,v("net")],["スマホ代","使用割合",ph,v("mob")]];
+ let sum=0;$("out").innerHTML=rows.map(([n,b,r,m])=>{const y=m*12*r;sum+=y;return `<tr><td>${n}</td><td>${b}</td><td>${(r*100).toFixed(1)}%</td><td>${yen(y)}</td></tr>`}).join("")+`<tr class="best"><td>合計</td><td></td><td></td><td>${yen(sum)}</td></tr>`}
+document.querySelectorAll("input").forEach(e=>e.addEventListener("input",render));render();
+</script>
+</body>
+</html>
