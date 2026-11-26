@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>販売手数料・手取り計算機｜BOOTH・note・minne・Creema・ココナラ・メルカリを一括比較</title>
+<meta name="description" content="販売価格を入れるだけで、BOOTH・note・minne・Creema・ココナラ・メルカリの販売手数料と手取りを一括で比較できる無料ツール。登録不要・入力内容は送信されません。">
+<style>
+  :root { --bg:#fafaf7; --fg:#1f2328; --muted:#5b6470; --line:#e3e3dc; --accent:#2f6f5e; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16181b; --fg:#e8e8e3; --muted:#a0a7b0; --line:#30343a; --accent:#6cc3a9; --card:#1e2125; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; background:var(--bg); color:var(--fg); line-height:1.7; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.5rem; line-height:1.4; margin:0 0 8px; }
+  h2 { font-size:1.15rem; margin:40px 0 8px; }
+  p.lead { color:var(--muted); margin:0 0 24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  label { display:block; font-weight:600; margin-bottom:4px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > div { flex:1 1 200px; }
+  input[type=number], select { width:100%; font-size:1.1rem; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
+  table { width:100%; border-collapse:collapse; margin-top:16px; font-variant-numeric:tabular-nums; }
+  th, td { padding:10px 8px; border-bottom:1px solid var(--line); text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-size:.85rem; color:var(--muted); font-weight:600; }
+  tr.best td { font-weight:700; }
+  tr.best td:first-child::after { content:" 最多"; font-size:.75rem; color:var(--accent); }
+  .note { font-size:.85rem; color:var(--muted); }
+  .bar { height:6px; background:var(--accent); border-radius:3px; margin-top:4px; }
+  details { margin-top:8px; }
+  footer { margin-top:48px; font-size:.8rem; color:var(--muted); }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>販売手数料・手取り計算機</h1>
+  <p class="lead">価格を入れると、主な販売サイトの手数料と手取りを一括で比較します。登録不要で、入力内容はどこにも送信されません。</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="price">販売価格（円・税込）</label>
+        <input id="price" type="number" min="0" step="1" value="1000" inputmode="numeric">
+      </div>
+      <div>
+        <label for="ship">送料（購入者が払う分・円）</label>
+        <input id="ship" type="number" min="0" step="1" value="0" inputmode="numeric">
+      </div>
+      <div>
+        <label for="pay">noteの購入者の支払方法</label>
+        <select id="pay">
+          <option value="0.05">クレジットカード（5%）</option>
+          <option value="0.07">PayPay・Amazon Pay（7%）</option>
+          <option value="0.065">PayPal（6.5%）</option>
+          <option value="0.10">noteポイント（10%）</option>
+          <option value="0.15">携帯キャリア決済（15%）</option>
+        </select>
+      </div>
+    </div>
+
+    <table aria-live="polite">
+      <thead><tr><th>販売サイト</th><th>手数料</th><th>手取り</th><th>手取り率</th></tr></thead>
+      <tbody id="out"></tbody>
+    </table>
+    <p class="note">振込手数料は1回の振込ごとにかかるため、上の表には含めていません（下の一覧を参照）。</p>
+  </div>
+
+  <h2>手数料の計算方法（2026年11月確認）</h2>
+  <div class="card note" id="rules"></div>
+
+  <h2>よくある質問</h2>
+  <details><summary>手数料は経費になりますか？</summary>
+  <p>販売サイトの手数料や振込手数料は、一般に「支払手数料」として経費に計上できます。売上は手数料を引く前の金額で計上し、手数料を経費にするのが基本です。</p></details>
+  <details><summary>副業の売上がいくらから確定申告が必要ですか？</summary>
+  <p>会社員の場合、副業の「所得」（売上から経費を引いた額）が年20万円を超えると、原則として所得税の確定申告が必要です。20万円以下でも住民税の申告は必要です。詳しくは<a href="https://www.nta.go.jp/">国税庁</a>やお住まいの市区町村でご確認ください。</p></details>
+
+  <footer>
+    <p>本ツールの数値は公開情報をもとにした目安です。各サービスの手数料は変更されることがあるため、最新の情報は各公式サイトでご確認ください。税務上の判断は税務署や税理士にご相談ください。</p>
+  </footer>
+</main>
+
+<script>
+// 手数料ルール。rate は税込の割合。確認日: 2026-11。
+const PLATFORMS = [
+  { name: "BOOTH", desc: "（価格＋送料）× 5.6% ＋ 45円。2025年10月28日改定。ダウンロード商品は送料なし。",
+    fee: (p, s) => Math.ceil((p + s) * 0.056) + 45, transfer: "振込手数料は振込先により異なる" },
+  { name: "minne", desc: "（価格＋送料）× 10.659%（税込）。",
+    fee: (p, s) => Math.ceil((p + s) * 0.10659), transfer: "振込手数料 220円／回（月1回自動振込。1,000円未満は翌月へ繰越）" },
+  { name: "Creema", desc: "成約手数料 10.67%（税込）。",
+    fee: (p, s) => Math.ceil((p + s) * 0.1067), transfer: "振込手数料 3万円未満 200円・3万円以上 275円／回" },
+  { name: "note", desc: "事務手数料（支払方法により5〜15%）＋ 残りの10%（プラットフォーム利用料）。定期購読マガジンは20%。",
+    fee: (p, s, pay) => { const a = Math.floor(p * pay); const b = Math.floor((p - a) * 0.10); return a + b; }, transfer: "振込手数料 270円／回" },
+  { name: "ココナラ", desc: "販売手数料 22%（税込）。ビデオチャット・ブログは27.5%。",
+    fee: (p) => Math.ceil(p * 0.22), transfer: "振込申請が3,000円未満なら160円、3,000円以上は無料" },
+  { name: "メルカリ", desc: "販売手数料 10%（価格のみにかかる）。メルカリは出品者が送料を負担する前提で、送料を手取りから差し引いて表示します。",
+    fee: (p) => Math.floor(p * 0.10), sellerPaysShip: true, transfer: "振込手数料 200円／回" },
+];
+
+const $ = (id) => document.getElementById(id);
+const yen = (n) => n.toLocaleString("ja-JP") + "円";
+
+function render() {
+  const p = Math.max(0, Math.floor(Number($("price").value) || 0));
+  const s = Math.max(0, Math.floor(Number($("ship").value) || 0));
+  const pay = Number($("pay").value);
+  const rows = PLATFORMS.map(x => {
+    const fee = Math.min(x.fee(p, s, pay), p + s);
+    const net = p - fee - (x.sellerPaysShip ? s : 0);
+    return { name: x.name, fee, net, rate: p ? net / p : 0 };
+  });
+  const best = Math.max(...rows.map(r => r.net));
+  $("out").innerHTML = rows.map(r => `
+    <tr class="${p && r.net === best ? "best" : ""}">
+      <td>${r.name}<div class="bar" style="width:${Math.max(0, r.rate) * 100}%"></div></td>
+      <td>${yen(r.fee)}</td><td>${yen(r.net)}</td><td>${(r.rate * 100).toFixed(1)}%</td>
+    </tr>`).join("");
+}
+
+$("rules").innerHTML = "<ul>" + PLATFORMS.map(x => `<li><b>${x.name}</b>：${x.desc}${x.transfer}。</li>`).join("") + "</ul>";
+["price", "ship", "pay"].forEach(id => $(id).addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
