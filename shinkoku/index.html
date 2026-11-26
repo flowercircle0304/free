@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>副業の確定申告・住民税申告 要否チェッカー｜20万円ルールを3問で確認</title>
+<meta name="description" content="会社員の副業は確定申告が必要？売上と経費を入れるだけで、所得税の確定申告と住民税の申告が必要かの目安が分かる無料ツール。登録不要。">
+<style>
+  :root { --bg:#fafaf7; --fg:#1f2328; --muted:#5b6470; --line:#e3e3dc; --accent:#2f6f5e; --card:#fff; --warn:#9a4b00; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16181b; --fg:#e8e8e3; --muted:#a0a7b0; --line:#30343a; --accent:#6cc3a9; --card:#1e2125; --warn:#f0a35e; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; background:var(--bg); color:var(--fg); line-height:1.7; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.5rem; line-height:1.4; margin:0 0 8px; }
+  h2 { font-size:1.15rem; margin:40px 0 8px; }
+  .lead, .note { color:var(--muted); }
+  .note { font-size:.85rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  fieldset { border:0; padding:0; margin:0 0 16px; }
+  legend, label.q { font-weight:600; display:block; margin-bottom:6px; }
+  .opts label { display:inline-block; margin-right:16px; }
+  input[type=number] { width:100%; font-size:1.1rem; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
+  .row { display:flex; gap:12px; flex-wrap:wrap; } .row > div { flex:1 1 200px; }
+  .result { border-left:4px solid var(--accent); padding:12px 16px; background:var(--card); border-radius:8px; margin:8px 0; }
+  .result.must { border-color:var(--warn); }
+  .result b { display:block; font-size:1.05rem; }
+  a { color:var(--accent); }
+  footer { margin-top:48px; font-size:.8rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>副業の確定申告・住民税申告 要否チェッカー</h1>
+  <p class="lead">3つの質問に答えると、副業について所得税の確定申告と住民税の申告が必要かどうかの目安が分かります。入力内容はどこにも送信されません。</p>
+
+  <div class="card">
+    <fieldset>
+      <legend>1. 会社員やパートなどで、勤め先から給与をもらっていて年末調整を受けていますか？</legend>
+      <div class="opts">
+        <label><input type="radio" name="emp" value="yes" checked> はい</label>
+        <label><input type="radio" name="emp" value="no"> いいえ（副業以外に給与がない・自営業など）</label>
+      </div>
+    </fieldset>
+    <div class="row">
+      <div><label class="q" for="sales">2. 副業の年間の売上（円）</label><input id="sales" type="number" min="0" value="300000" inputmode="numeric"></div>
+      <div><label class="q" for="cost">3. 副業の年間の経費（円）</label><input id="cost" type="number" min="0" value="80000" inputmode="numeric"></div>
+    </div>
+    <fieldset style="margin-top:16px">
+      <legend>医療費控除・ふるさと納税（6自治体以上）・住宅ローン控除の初年度などで、確定申告をする予定がありますか？</legend>
+      <div class="opts">
+        <label><input type="radio" name="other" value="no" checked> いいえ</label>
+        <label><input type="radio" name="other" value="yes"> はい</label>
+      </div>
+    </fieldset>
+    <p class="note">経費には、販売サイトの手数料・材料費・通信費のうち仕事で使った分などが入ります。手数料の計算には<a href="../tesuryo/">販売手数料・手取り計算機</a>も使えます。</p>
+  </div>
+
+  <div id="out" aria-live="polite"></div>
+
+  <h2>判定の考え方</h2>
+  <div class="card note">
+    <ul>
+      <li>副業の「所得」は、売上から経費を引いた金額です。売上そのものではありません。</li>
+      <li>給与をもらって年末調整を受けている人は、給与以外の所得が年20万円以下なら、原則として所得税の確定申告は不要です。</li>
+      <li>ただし、ほかの理由で確定申告をする場合は、20万円以下の副業の所得も含めて申告します。</li>
+      <li>所得税の申告が不要でも、住民税には20万円ルールがないため、お住まいの市区町村への住民税の申告が必要です。</li>
+      <li>給与がない人は、所得の合計が基礎控除の額を超えると確定申告が必要になります。基礎控除の額は年分や所得額によって変わるため、国税庁の最新情報を確認してください。</li>
+    </ul>
+    <p>参考: <a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm">国税庁 No.1900 給与所得者で確定申告が必要な人</a></p>
+  </div>
+
+  <footer>
+    <p>このツールは一般的な目安を示すもので、税務上の判断を保証するものではありません。2か所以上から給与をもらっている、給与の年収が2,000万円を超えるなど、ここで扱っていない条件もあります。最終的な判断は税務署・市区町村・税理士にご確認ください。</p>
+  </footer>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const yen = (n) => n.toLocaleString("ja-JP") + "円";
+function render() {
+  const emp = $('input[name=emp]:checked').value === "yes";
+  const other = $('input[name=other]:checked').value === "yes";
+  const sales = Math.max(0, Number($("#sales").value) || 0);
+  const cost = Math.max(0, Number($("#cost").value) || 0);
+  const income = sales - cost;
+  let tax, res;
+  if (emp) {
+    if (income > 200000) tax = ["must", "所得税の確定申告が必要です（目安）", `副業の所得が ${yen(income)} で、20万円を超えています。`];
+    else if (other) tax = ["must", "確定申告をするなら、副業の所得も含めて申告します", `副業の所得は ${yen(Math.max(income,0))} で20万円以下ですが、ほかの理由で確定申告をする場合は含める必要があります。`];
+    else tax = ["ok", "所得税の確定申告は原則不要です（目安）", `副業の所得は ${yen(Math.max(income,0))} で、20万円以下です。`];
+    res = (income > 0 && !(income > 200000 || other))
+      ? ["must", "住民税の申告は必要です", "所得税の確定申告をしない場合でも、副業の所得はお住まいの市区町村に住民税の申告をします。"]
+      : (income > 0 ? ["ok", "住民税の申告は確定申告で済みます", "確定申告をすると、その内容が市区町村に伝わるため、住民税の申告を別にする必要はありません。"]
+                    : ["ok", "所得がない場合、住民税の申告は原則不要です", "経費が売上以上で所得がない場合でも、自治体によっては申告を求められることがあります。"]);
+  } else {
+    tax = ["must", "所得の合計によっては確定申告が必要です", `副業の所得は ${yen(income)} です。給与がない場合は、ほかの所得と合わせた合計が基礎控除の額を超えると確定申告が必要です。`];
+    res = ["ok", "住民税", "確定申告をすれば住民税の申告は不要です。確定申告をしない場合は、市区町村への住民税の申告が必要なことがあります。"];
+  }
+  if (income < 0) tax[2] += " 経費が売上を上回っているため、所得はマイナス（赤字）です。";
+  $("#out").innerHTML = [tax, res].map(([k, t, d]) => `<div class="result ${k}"><b>${t}</b>${d}</div>`).join("");
+}
+document.querySelectorAll("input").forEach(el => el.addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
