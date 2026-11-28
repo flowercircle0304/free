@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ハンドメイド作品の原価・売上原価計算機｜材料費から販売価格と棚卸まで</title>
+<link rel="canonical" href="https://flowercircle0304.github.io/free/genka/">
+<meta name="description" content="材料の仕入値と使用量から作品1点の原価とおすすめ価格を計算。確定申告に使う売上原価（期首棚卸＋仕入−期末棚卸）も計算できる無料ツール。登録不要。">
+<style>
+  :root { --bg:#fafaf7; --fg:#1f2328; --muted:#5b6470; --line:#e3e3dc; --accent:#2f6f5e; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16181b; --fg:#e8e8e3; --muted:#a0a7b0; --line:#30343a; --accent:#6cc3a9; --card:#1e2125; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; background:var(--bg); color:var(--fg); line-height:1.7; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.5rem; line-height:1.4; margin:0 0 8px; }
+  h2 { font-size:1.15rem; margin:40px 0 8px; }
+  .lead, .note { color:var(--muted); }
+  .note { font-size:.85rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  label { display:block; font-weight:600; margin-bottom:4px; font-size:.9rem; }
+  input, select { width:100%; font-size:1rem; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; } .row > div { flex:1 1 150px; }
+  table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+  th, td { padding:6px 4px; border-bottom:1px solid var(--line); text-align:right; font-size:.9rem; }
+  th { color:var(--muted); font-weight:600; font-size:.8rem; }
+  td:first-child, th:first-child { text-align:left; }
+  td input { padding:6px 8px; }
+  button { font-size:.9rem; padding:6px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); cursor:pointer; }
+  .result { border-left:4px solid var(--accent); padding:12px 16px; background:var(--card); border-radius:8px; margin:12px 0; }
+  .big { font-size:1.4rem; font-weight:700; }
+  a { color:var(--accent); }
+  footer { margin-top:48px; font-size:.8rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>ハンドメイド作品の原価・売上原価計算機</h1>
+  <p class="lead">材料の仕入値と使う量から作品1点の原価を出し、販売先の手数料と目標の利益率からおすすめ価格を計算します。後半では、確定申告で使う「売上原価」も計算できます。入力内容はどこにも送信されません。</p>
+
+  <h2>1. 作品1点の原価とおすすめ価格</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>材料</th><th>仕入値（円）</th><th>仕入数量</th><th>1点に使う量</th><th>材料費</th><th></th></tr></thead>
+      <tbody id="mats"></tbody>
+    </table>
+    <p><button id="add" type="button">＋ 材料を追加</button></p>
+    <div class="row">
+      <div><label for="pack">包装・送料など（円）</label><input id="pack" type="number" min="0" value="30"></div>
+      <div><label for="min">制作時間（分）</label><input id="min" type="number" min="0" value="30"></div>
+      <div><label for="wage">時給の目安（円）</label><input id="wage" type="number" min="0" value="1000"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div><label for="plat">販売先</label><select id="plat"></select></div>
+      <div><label for="margin">目標の利益率（%）</label><input id="margin" type="number" min="0" max="90" value="30"></div>
+    </div>
+    <div id="out1" aria-live="polite"></div>
+    <p class="note">おすすめ価格 ＝（原価＋作業代＋固定手数料）÷（1 − 手数料率 − 目標の利益率）を10円単位で切り上げた額です。手数料率は2026年11月時点の公開情報です（<a href="../tesuryo/">手数料・手取り計算機</a>で比較できます）。</p>
+  </div>
+
+  <h2>2. 確定申告で使う「売上原価」</h2>
+  <div class="card">
+    <div class="row">
+      <div><label for="begin">① 年初（期首）の棚卸高（円）</label><input id="begin" type="number" min="0" value="0"></div>
+      <div><label for="buy">② 1年間の仕入高（円）</label><input id="buy" type="number" min="0" value="60000"></div>
+      <div><label for="end">③ 年末（期末）の棚卸高（円）</label><input id="end" type="number" min="0" value="12000"></div>
+    </div>
+    <div id="out2" aria-live="polite"></div>
+    <p class="note">③は、12月31日に残っている材料と作品の在庫を数え、「数量 × 単価」で合計した金額です。上の表の材料費（作品1点の原価）を使うと、作品在庫の金額も出せます。</p>
+  </div>
+
+  <h2>棚卸と売上原価の基本</h2>
+  <div class="card note">
+    <ul>
+      <li>売上原価は「年初の棚卸高 ＋ 年間の仕入高 − 年末の棚卸高」で計算します。売れ残った材料や作品の分は、その年の経費になりません。</li>
+      <li>棚卸しは12月31日の在庫で行います。対象は商品・製品・原材料などのほか、まだ使っていない包装材料などの消耗品です。ただし、通常の年に比べて特に増えていない消耗品は棚卸しを省略してもよいとされています。</li>
+      <li>評価方法を税務署に届け出ていない場合は「最終仕入原価法」で評価します。年末に一番近い時期に仕入れたときの単価 × 年末の数量で計算します。</li>
+      <li>個人事業主本人の作業時間（人件費）は経費にならないため、作品在庫の金額には含めません。上の作業代は価格を決めるための目安です。</li>
+    </ul>
+    <p>参考: <a href="https://www.nta.go.jp/taxes/shiraberu/shinkoku/tebiki/2025/pdf/025.pdf">国税庁 令和7年分 青色申告の決算の手引き（一般用）「棚卸表の作成」</a></p>
+  </div>
+
+  <div class="card" style="margin-top:24px;border-color:#2f6f5e">
+    <b>材料の仕入から棚卸までまとめて管理したい方へ</b>
+    <p style="margin:6px 0 8px">仕入記録を入れると材料ごとの最新単価が自動で出て、作品ごとの原価・おすすめ価格、年末の棚卸高と売上原価まで計算できるスプレッドシートを用意しました。</p>
+    <a href="https://creator-okane.booth.pm/">原価計算・価格設定＆棚卸シート（BOOTH）</a> ／ <a href="https://creator-okane.booth.pm/items/9226811">収支・確定申告準備シート（BOOTH）</a>
+  </div>
+
+  <footer>
+    <p>このツールは一般的な目安を示すもので、税務上の判断を保証するものではありません。最終的な判断は国税庁の情報や税務署・税理士にご確認ください。</p>
+    <p><a href="../">副業クリエイターのお金の道具箱</a>：<a href="../tesuryo/">手数料・手取り計算機</a> ／ <a href="../nedan/">販売価格の逆算</a> ／ <a href="../genka/">原価・売上原価計算機</a> ／ <a href="../anbun/">家事按分計算機</a> ／ <a href="../shinkoku/">申告要否チェッカー</a></p>
+  </footer>
+</main>
+<script>
+const PLAT = [
+  ["BOOTH", 0.056, 45], ["minne", 0.10659, 0], ["Creema", 0.1067, 0], ["メルカリ", 0.10, 0], ["ココナラ", 0.22, 0], ["イベント・手渡し", 0, 0],
+];
+const $ = (s) => document.querySelector(s);
+const yen = (n) => Math.round(n).toLocaleString("ja-JP") + "円";
+const num = (el) => Math.max(0, Number(el.value) || 0);
+$("#plat").innerHTML = PLAT.map((p, i) => `<option value="${i}"${i === 1 ? " selected" : ""}>${p[0]}（${(p[1] * 100).toFixed(1)}%${p[2] ? "＋" + p[2] + "円" : ""}）</option>`).join("");
+
+function addRow(name = "", price = "", qty = "", use = "") {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td><input value="${name}" aria-label="材料名"></td><td><input type="number" min="0" value="${price}" aria-label="仕入値"></td>
+    <td><input type="number" min="0" value="${qty}" aria-label="仕入数量"></td><td><input type="number" min="0" step="any" value="${use}" aria-label="使う量"></td>
+    <td class="cost">0円</td><td><button type="button" aria-label="この行を削除">×</button></td>`;
+  tr.querySelector("button").onclick = () => { tr.remove(); render(); };
+  tr.querySelectorAll("input").forEach((el) => el.addEventListener("input", render));
+  $("#mats").appendChild(tr);
+}
+function render() {
+  let mat = 0;
+  document.querySelectorAll("#mats tr").forEach((tr) => {
+    const [, p, q, u] = [...tr.querySelectorAll("input")].map((el) => Number(el.value) || 0);
+    const c = q > 0 ? (p / q) * u : 0;
+    tr.querySelector(".cost").textContent = (Math.round(c * 10) / 10).toLocaleString("ja-JP") + "円";
+    mat += c;
+  });
+  const cost = Math.round(mat) + num($("#pack"));
+  const labor = Math.round(num($("#min")) / 60 * num($("#wage")));
+  const [name, rate, fix] = PLAT[$("#plat").value];
+  const m = num($("#margin")) / 100;
+  const den = 1 - rate - m;
+  let html = `<div class="result">1点の原価（材料費＋包装など）<div class="big">${yen(cost)}</div>作業代の目安 ${yen(labor)}</div>`;
+  if (den <= 0) html += `<div class="result">目標の利益率が高すぎるため計算できません。</div>`;
+  else {
+    const price = Math.ceil((cost + labor + fix) / den / 10) * 10;
+    const fee = Math.ceil(price * rate) + fix;
+    const net = price - fee;
+    html += `<div class="result">${name}でのおすすめ価格<div class="big">${yen(price)}</div>手数料 ${yen(fee)} ／ 手取り ${yen(net)} ／ 1点の利益 ${yen(net - cost)}（作業代を引くと ${yen(net - cost - labor)}）</div>`;
+  }
+  $("#out1").innerHTML = html;
+  const cogs = num($("#begin")) + num($("#buy")) - num($("#end"));
+  $("#out2").innerHTML = `<div class="result">売上原価<div class="big">${yen(cogs)}</div>① ${yen(num($("#begin")))} ＋ ② ${yen(num($("#buy")))} − ③ ${yen(num($("#end")))}。年末の棚卸高 ${yen(num($("#end")))} は、来年の「年初の棚卸高」になります。</div>`;
+}
+addRow("ピアス金具", 1800, 20, 1); addRow("天然石ビーズ", 1500, 100, 2); addRow("ギフト袋", 1100, 100, 1);
+$("#add").onclick = () => { addRow(); render(); };
+["#pack", "#min", "#wage", "#plat", "#margin", "#begin", "#buy", "#end"].forEach((s) => $(s).addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
